@@ -15,8 +15,8 @@ import { addLocaleToPath, getLanguage } from 'lib/i18n-utils';
 import LocaleSuggestionsListItem from './list-item';
 import QueryLocaleSuggestions from 'components/data/query-locale-suggestions';
 import Notice from 'components/notice';
-import switchLocale from 'lib/i18n-utils/switch-locale';
 import { getLocaleSuggestions } from 'state/selectors';
+import { setLocale } from 'state/ui/language/actions';
 
 export class LocaleSuggestions extends Component {
 	static propTypes = {
@@ -103,4 +103,5 @@ export class LocaleSuggestions extends Component {
 
 export default connect( state => ( {
 	localeSuggestions: getLocaleSuggestions( state ),
+	setLocale,
 } ) )( LocaleSuggestions );
