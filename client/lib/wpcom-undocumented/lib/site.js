@@ -326,7 +326,7 @@ UndocumentedSite.prototype.statsOrders = function( query ) {
  * @param {object} query query parameters
  * @return {Promise} A Promise to resolve when complete.
  */
-import refData from 'extensions/woocommerce/app/store-stats/refDummyData.json';
+import refData from 'extensions/woocommerce/app/store-stats/refDummyData';
 UndocumentedSite.prototype.statsStoreReferrers = function() {
 	// return this.wpcom.req.get(
 	// 	{
