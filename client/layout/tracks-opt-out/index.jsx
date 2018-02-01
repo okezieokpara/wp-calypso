@@ -64,6 +64,7 @@ class TracksOptOut extends React.PureComponent {
 				allowtransparency="true"
 				scrolling="no"
 				src="https://widgets.wp.com/tracks-opt-out"
+				title="Tracks Opt Out iframe"
 			/>
 		);
 	}
