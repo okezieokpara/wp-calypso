@@ -6,17 +6,7 @@
 import {
 	I18N_COMMUNITY_TRANSLATOR_ACTIVATE,
 	I18N_COMMUNITY_TRANSLATOR_DEACTIVATE,
-	I18N_COMMUNITY_TRANSLATOR_REFRESH,
 } from 'state/action-types';
-
-/**
- * Action creator function: I18N_COMMUNITY_TRANSLATOR_REFRESH
- *
- * @return {Object} action object
- */
-export const refreshCommunityTranslator = () => ( {
-	type: I18N_COMMUNITY_TRANSLATOR_REFRESH,
-} );
 
 /**
  * Action creator function: I18N_COMMUNITY_TRANSLATOR_ACTIVATE
@@ -35,4 +25,3 @@ export const activateCommunityTranslator = () => ( {
 export const deactivateCommunityTranslator = () => ( {
 	type: I18N_COMMUNITY_TRANSLATOR_DEACTIVATE,
 } );
-
