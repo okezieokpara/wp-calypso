@@ -29,16 +29,12 @@ class StoreStatsReferrerWidget extends Component {
 	categorize( data ) {
 		const initialValue = [ 'social', 'email', 'organic', 'search', 'other' ].reduce( ( obj, c ) => {
 			obj[ c ] = {
-				gross_sales_new: 0,
-				gross_sales_returning: 0,
-				total: 0,
+				gross_sales: 0,
 			};
 			return obj;
 		}, {} );
 		return data.reduce( ( result, d ) => {
-			result[ d.category ].gross_sales_new += d.gross_sales_new;
-			result[ d.category ].gross_sales_returning += d.gross_sales_returning;
-			result[ d.category ].total += d.gross_sales_new + d.gross_sales_returning;
+			result[ d.category ].gross_sales += d.gross_sales;
 			return result;
 		}, initialValue );
 	}
@@ -50,9 +46,7 @@ class StoreStatsReferrerWidget extends Component {
 		const header = (
 			<TableRow isHeader>
 				<TableItem isHeader>Source</TableItem>
-				<TableItem isHeader>New</TableItem>
-				<TableItem isHeader>Returning</TableItem>
-				<TableItem isHeader>Total</TableItem>
+				<TableItem isHeader>Gross Sales</TableItem>
 			</TableRow>
 		);
 		return (
@@ -62,9 +56,7 @@ class StoreStatsReferrerWidget extends Component {
 					return (
 						<TableRow key={ key }>
 							<TableItem>{ key }</TableItem>
-							<TableItem>{ category.gross_sales_new }</TableItem>
-							<TableItem>{ category.gross_sales_returning }</TableItem>
-							<TableItem>{ category.total }</TableItem>
+							<TableItem>{ category.gross_sales }</TableItem>
 						</TableRow>
 					);
 				} ) }
