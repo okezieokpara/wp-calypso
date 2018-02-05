@@ -8,7 +8,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
-import { get, head, includes, isEmpty, map, reject } from 'lodash';
+import { get, head, isEmpty, map } from 'lodash';
 
 /**
  * Internal dependencies
@@ -18,13 +18,12 @@ import EditorRevisionsListItem from './item';
 import { selectPostRevision } from 'state/posts/revisions/actions';
 import KeyboardShortcuts from 'lib/keyboard-shortcuts';
 
-import PostEditStore from 'lib/posts/post-edit-store';
-
 class EditorRevisionsList extends PureComponent {
 	static propTypes = {
 		comparisons: PropTypes.object,
 		postId: PropTypes.number,
 		siteId: PropTypes.number,
+		isRequestingRevisions: PropTypes.bool,
 		revisions: PropTypes.array.isRequired,
 		selectedRevisionId: PropTypes.number,
 	};
@@ -33,16 +32,16 @@ class EditorRevisionsList extends PureComponent {
 		this.props.selectPostRevision( revisionId );
 	};
 
-	trySelectingFirstRevision = () => {
-		const { revisions, newRevisionIds } = this.props;
-		if ( isEmpty( revisions ) || ! isEmpty( newRevisionIds ) ) {
+	trySelectingLatestRevision = () => {
+		const { revisions } = this.props;
+		if ( ! revisions.length ) {
 			return;
 		}
-		const firstRevision = head( revisions );
-		if ( ! firstRevision.id ) {
+		const latestRevision = head( revisions );
+		if ( ! latestRevision.id ) {
 			return;
 		}
-		this.selectRevision( firstRevision.id );
+		this.selectRevision( latestRevision.id );
 	};
 
 	componentDidMount() {
@@ -53,7 +52,7 @@ class EditorRevisionsList extends PureComponent {
 		KeyboardShortcuts.on( 'move-selection-down', this.selectPreviousRevision );
 
 		if ( ! this.props.selectedRevisionId ) {
-			this.trySelectingFirstRevision();
+			this.trySelectingLatestRevision();
 		}
 	}
 
@@ -64,7 +63,13 @@ class EditorRevisionsList extends PureComponent {
 
 	componentDidUpdate( prevProps ) {
 		if ( ! this.props.selectedRevisionId ) {
-			this.trySelectingFirstRevision();
+			this.trySelectingLatestRevision();
+		}
+		if (
+			this.props.selectedRevisionId &&
+			this.props.revisions.length !== prevProps.revisions.length
+		) {
+			this.trySelectingLatestRevision();
 		}
 		if ( this.props.selectedRevisionId !== prevProps.selectedRevisionId ) {
 			this.scrollToSelectedItem();
@@ -113,9 +118,9 @@ class EditorRevisionsList extends PureComponent {
 			comparisons,
 			postId,
 			revisions,
+			isRequestingRevisions,
 			selectedRevisionId,
 			siteId,
-			newRevisionIds,
 		} = this.props;
 		const classes = classNames( 'editor-revisions-list', {
 			'is-loading': isEmpty( revisions ),
@@ -126,18 +131,13 @@ class EditorRevisionsList extends PureComponent {
 				<EditorRevisionsListHeader numRevisions={ revisions.length } />
 				<div className="editor-revisions-list__scroller">
 					<ul className="editor-revisions-list__list">
-						{ isEmpty( revisions ) &&
-							isEmpty( newRevisionIds ) && (
-								<div className={ 'editor-revisions-list__revision-placeholder' } />
+						{ isEmpty( revisions ) && (
+							<li className={ 'editor-revisions-list__revision-placeholder' } />
+						) }
+						{ ! isEmpty( revisions ) &&
+							isRequestingRevisions && (
+								<li className={ 'editor-revisions-list__revision-placeholder' } />
 							) }
-						{ map( newRevisionIds, revisionId => {
-							return (
-								<div
-									key={ 'new-' + revisionId }
-									className="editor-revisions-list__revision-placeholder"
-								/>
-							);
-						} ) }
 						{ map( revisions, revision => {
 							const itemClasses = classNames( 'editor-revisions-list__revision', {
 								'is-selected': revision.id === selectedRevisionId,
@@ -161,19 +161,12 @@ class EditorRevisionsList extends PureComponent {
 	}
 }
 
-const filterNewRevisionsIds = ( newRevisionIds, revisions ) =>
-	reject( newRevisionIds, x => includes( map( revisions, 'id' ), x ) );
-
 export default connect(
-	( state, { revisions, comparisons, selectedRevisionId } ) => {
+	( state, { comparisons, selectedRevisionId } ) => {
 		const { nextRevisionId, prevRevisionId } = get( comparisons, [ selectedRevisionId ], {} );
-		const revisionIds = PostEditStore.getRevisionIds();
-		const newRevisionIds = filterNewRevisionsIds( revisionIds, revisions );
-
 		return {
 			nextRevisionId,
 			prevRevisionId,
-			newRevisionIds,
 		};
 	},
 	{ selectPostRevision }

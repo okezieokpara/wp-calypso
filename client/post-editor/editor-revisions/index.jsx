@@ -17,6 +17,7 @@ import {
 	getPostRevisionsComparisons,
 	getPostRevisionsAuthorsId,
 	getPostRevisionsSelectedRevisionId,
+	isRequestingPostRevisions,
 } from 'state/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { recordTracksEvent } from 'state/analytics/actions';
@@ -35,6 +36,7 @@ class EditorRevisions extends Component {
 			authorsIds,
 			comparisons,
 			postId,
+			isRequestingRevisions,
 			revisions,
 			selectedDiff,
 			selectedRevisionId,
@@ -58,6 +60,7 @@ class EditorRevisions extends Component {
 				<EditorRevisionsList
 					comparisons={ comparisons }
 					postId={ postId }
+					isRequestingRevisions={ isRequestingRevisions }
 					revisions={ revisions }
 					selectedRevisionId={ selectedRevisionId }
 					siteId={ siteId }
@@ -72,6 +75,7 @@ EditorRevisions.propTypes = {
 	authorsIds: PropTypes.array.isRequired,
 	comparisons: PropTypes.object,
 	postId: PropTypes.number.isRequired,
+	isRequestingRevisions: PropTypes.bool,
 	revisions: PropTypes.array.isRequired,
 	selectedDiff: PropTypes.object,
 	selectedRevisionId: PropTypes.number,
@@ -90,7 +94,7 @@ export default flow(
 		state => {
 			const postId = getEditorPostId( state );
 			const siteId = getSelectedSiteId( state );
-
+			const isRequestingRevisions = isRequestingPostRevisions( state, siteId, postId );
 			const revisions = getPostRevisions( state, siteId, postId );
 			const selectedRevisionId = getPostRevisionsSelectedRevisionId( state );
 			const comparisons = getPostRevisionsComparisons( state, siteId, postId );
@@ -100,6 +104,7 @@ export default flow(
 				authorsIds: getPostRevisionsAuthorsId( state, siteId, postId ),
 				comparisons,
 				postId,
+				isRequestingRevisions,
 				revisions,
 				selectedDiff,
 				selectedRevisionId,
