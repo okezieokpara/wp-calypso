@@ -35,6 +35,8 @@ var _initialRawContent = null,
 	_savedPost = null,
 	PostEditStore;
 
+let _revisionIds = [];
+
 function resetState() {
 	debug( 'Reset state' );
 	_initialRawContent = null;
@@ -92,6 +94,7 @@ function updatePost( site, post ) {
 	_post = _savedPost;
 	_isNew = false;
 	_loadingError = null;
+	_revisionIds = get( post, 'revisions', _revisionIds );
 
 	// To ensure that edits made while an update is inflight are not lost, we need to apply them to the updated post.
 	_queue.forEach( function( change ) {
@@ -373,6 +376,10 @@ PostEditStore = {
 
 	isLoading: function() {
 		return _isLoading;
+	},
+
+	getRevisionIds: function() {
+		return _revisionIds;
 	},
 
 	isAutosaving: function() {
