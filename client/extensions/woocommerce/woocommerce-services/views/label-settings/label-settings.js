@@ -41,7 +41,6 @@ import {
 class ShippingLabels extends Component {
 	componentWillMount() {
 		this.setState( { expanded: this.isExpanded( this.props ) } );
-		this.onVisibilityChange = this.onVisibilityChange.bind( this );
 	}
 
 	componentWillReceiveProps( props ) {
