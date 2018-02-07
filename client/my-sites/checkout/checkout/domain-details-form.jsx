@@ -12,39 +12,37 @@ import { first, includes, indexOf, intersection, isEqual, last, map } from 'loda
 /**
  * Internal dependencies
  */
-import { getContactDetailsCache } from 'state/selectors';
-import { updateContactDetailsCache } from 'state/domains/management/actions';
+
 import QueryContactDetailsCache from 'components/data/query-contact-details-cache';
 import PrivacyProtection from './privacy-protection';
 import PaymentBox from './payment-box';
-import { cartItems } from 'lib/cart-values';
 import analytics from 'lib/analytics';
-
+import FormButton from 'components/forms/form-button';
+import SecurePaymentFormPlaceholder from './secure-payment-form-placeholder.jsx';
+import wp from 'lib/wp';
+import config from 'config';
+import ContactDetailsFormFields from 'components/domains/contact-details-form-fields';
+import ExtraInfoForm, {
+	tldsWithAdditionalDetailsForms,
+} from 'components/domains/registrant-extra-info';
 import {
 	addPrivacyToAllDomains,
 	removePrivacyFromAllDomains,
 	setDomainDetails,
 	addGoogleAppsRegistrationData,
 } from 'lib/upgrades/actions';
-import FormButton from 'components/forms/form-button';
-import SecurePaymentFormPlaceholder from './secure-payment-form-placeholder.jsx';
-import wp from 'lib/wp';
-import ExtraInfoForm, {
-	tldsWithAdditionalDetailsForms,
-} from 'components/domains/registrant-extra-info';
-import config from 'config';
-import ContactDetailsFormFields from 'components/domains/contact-details-form-fields';
+import { cartItems } from 'lib/cart-values';
+import { getContactDetailsCache } from 'state/selectors';
+import { updateContactDetailsCache } from 'state/domains/management/actions';
 
 const debug = debugFactory( 'calypso:my-sites:upgrades:checkout:domain-details' );
 const wpcom = wp.undocumented();
 
 export class DomainDetailsForm extends PureComponent {
-	constructor( props, context ) {
-		super( props, context );
-
+	constructor( props ) {
+		super( props );
 		const steps = [ 'mainForm', ...this.getRequiredExtraSteps() ];
 		debug( 'steps:', steps );
-
 		this.state = {
 			steps,
 			currentStep: first( steps ),
@@ -110,38 +108,6 @@ export class DomainDetailsForm extends PureComponent {
 			],
 			'meta'
 		);
-
-	validate = ( fieldValues, onComplete ) => {
-		if ( this.needsOnlyGoogleAppsDetails() ) {
-			wpcom.validateGoogleAppsContactInformation(
-				fieldValues,
-				this.generateValidationHandler( onComplete )
-			);
-			return;
-		}
-
-		const allFieldValues = this.getMainFieldValues();
-
-		wpcom.validateDomainContactInformation(
-			allFieldValues,
-			this.getDomainNames(),
-			this.generateValidationHandler( onComplete )
-		);
-	};
-
-	generateValidationHandler( onComplete ) {
-		return ( error, data ) => {
-			const messages = ( data && data.messages ) || {};
-			onComplete( error, messages );
-		};
-	}
-
-	setFormState = form => {
-		if ( ! this.needsFax() ) {
-			delete form.fax;
-		}
-		this.setState( { form } );
-	};
 
 	needsOnlyGoogleAppsDetails() {
 		return (
