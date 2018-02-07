@@ -3,8 +3,8 @@
  * External dependencies
  */
 import React, { Component } from 'react';
-import { localize } from 'i18n-calypso';
-import { get, flow } from 'lodash';
+import { localize, translate } from 'i18n-calypso';
+import { get, flow, inRange } from 'lodash';
 import Gridicon from 'gridicons';
 import { connect } from 'react-redux';
 
@@ -14,11 +14,22 @@ import { connect } from 'react-redux';
 import Card from 'components/card';
 import FormButton from 'components/forms/form-button';
 import FormTextInputWithAffixes from 'components/forms/form-text-input-with-affixes';
+import FormInputValidation from 'components/forms/form-input-validation';
 import ConfirmationDialog from './dialog';
 import FormSectionHeading from 'components/forms/form-section-heading';
 import { requestSiteRename } from 'state/site-rename/actions';
 import { isRequestingSiteRename } from 'state/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
+
+export const getDomainValidationMessage = domain => {
+	if ( ! domain.match( /^[a-z0-9]+$/i ) ) {
+		return translate( 'Domain can only contain letters and numbers' );
+	}
+
+	if ( ! inRange( domain.length, 2, 63 ) ) {
+		return translate( 'Domain length should be between 2 and 63' );
+	}
+};
 
 export class SimpleSiteRenameForm extends Component {
 	static defaultProps = {
@@ -29,6 +40,7 @@ export class SimpleSiteRenameForm extends Component {
 	state = {
 		showDialog: false,
 		domainFieldValue: '',
+		domainFieldError: '',
 	};
 
 	onConfirm = () => {
@@ -46,7 +58,11 @@ export class SimpleSiteRenameForm extends Component {
 	}
 
 	onSubmit = event => {
-		this.showConfirmationDialog();
+		const domainFieldError = getDomainValidationMessage( this.state.domainFieldValue );
+
+		this.setState( { domainFieldError } );
+		! domainFieldError && this.showConfirmationDialog();
+
 		event.preventDefault();
 	};
 
@@ -57,7 +73,16 @@ export class SimpleSiteRenameForm extends Component {
 	};
 
 	onFieldChange = event => {
-		this.setState( { domainFieldValue: get( event, 'target.value' ) } );
+		const domainFieldValue = get( event, 'target.value' );
+
+		if ( this.state.domainFieldError ) {
+			const domainFieldError = getDomainValidationMessage( domainFieldValue );
+			this.setState( { domainFieldError } );
+		}
+
+		this.setState( {
+			domainFieldValue,
+		} );
 	};
 
 	render() {
@@ -68,6 +93,8 @@ export class SimpleSiteRenameForm extends Component {
 			! isWPCOM ||
 			! this.state.domainFieldValue ||
 			this.state.domainFieldValue === currentDomainPrefix;
+
+		const { domainFieldError } = this.state;
 
 		return (
 			<div className="simple-site-rename-form">
@@ -87,7 +114,9 @@ export class SimpleSiteRenameForm extends Component {
 							suffix={ currentDomainSuffix }
 							onChange={ this.onFieldChange }
 							placeholder={ currentDomainPrefix }
+							className={ domainFieldError ? 'is-error' : null }
 						/>
+						{ domainFieldError && <FormInputValidation isError text={ domainFieldError } /> }
 						<div className="simple-site-rename-form__footer">
 							<div className="simple-site-rename-form__info">
 								<Gridicon icon="info-outline" size={ 18 } />
