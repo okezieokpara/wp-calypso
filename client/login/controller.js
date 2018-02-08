@@ -22,7 +22,7 @@ import { recordTracksEventWithClientId as recordTracksEvent } from 'state/analyt
 import { getCurrentUser, getCurrentUserLocale } from 'state/current-user/selectors';
 
 const enhanceContextWithLogin = context => {
-	const { path, params: { brandedLogin, flow, twoFactorAuthType, socialService } } = context;
+	const { path, params: { flow, twoFactorAuthType, socialService } } = context;
 
 	context.cacheQueryKeys = [ 'client_id' ];
 
@@ -112,7 +112,7 @@ export function magicLoginUse( context, next ) {
 }
 
 export function redirectDefaultLocale( context, next ) {
-	// Abort if it's not a simple route
+	// Do not redirect if it's not a simple route
 	if ( context.pathname !== '/log-in/en' && context.pathname !== '/log-in/jetpack/en' ) {
 		return next();
 	}
