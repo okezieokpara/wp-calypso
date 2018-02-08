@@ -65,7 +65,7 @@ export function normalizeDetailsFromTranslationData( glotPressData ) {
 		} );
 		return {
 			originalId: glotPressData.original_id,
-			translatedString: translationDetails.translation_0,
+			translatedSingular: translationDetails.translation_0,
 			lastModified: translationDetails.date_modified,
 		};
 	}

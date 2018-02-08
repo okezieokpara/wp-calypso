@@ -19,17 +19,17 @@ import { getTranslationData } from './utils.js';
 class Translatable extends Component {
 	state = {
 		showDialog: false,
-		translationData: {},
+		originalData: {},
 	};
 
 	hasDataLoaded() {
-		return ! isEmpty( this.state.translationData );
+		return ! isEmpty( this.state.originalData );
 	}
 
 	handleTranslationChange = event => {
 		const { name, value } = event.target;
 		this.setState( {
-			translationData: {
+			originalData: {
 				...this.state.translationData,
 				[ name ]: value,
 			},
@@ -45,8 +45,8 @@ class Translatable extends Component {
 
 		const { singular, context, plural, locale } = this.props;
 		! this.hasDataLoaded() &&
-			getTranslationData( locale.langSlug, { singular, context, plural } ).then( translationData =>
-				this.setState( { translationData } )
+			getTranslationData( locale.langSlug, { singular, context, plural } ).then( originalData =>
+				this.setState( { originalData } )
 			);
 	};
 
@@ -56,7 +56,11 @@ class Translatable extends Component {
 			<Button primary onClick={ this.closeDialog }>
 				{ translate( 'Close', { textOnly: true } ) }
 			</Button>,
-			<Button primary onClick={ noop }>
+			<Button
+				primary
+				onClick={ noop }
+				disabled={ this.state.originalData.translatedSingular === this.props.singular }
+			>
 				Submit a new translation
 			</Button>,
 		];
@@ -89,8 +93,8 @@ class Translatable extends Component {
 							<textarea
 								className={ placeHolderClass }
 								id="community-translator__singular"
-								name="translatedString"
-								value={ this.state.translationData.translatedString }
+								name="translatedSingular"
+								value={ this.state.originalData.translatedSingular }
 								onChange={ this.handleTranslationChange }
 							/>
 						</label>
