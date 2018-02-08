@@ -22,7 +22,7 @@ import { recordTracksEventWithClientId as recordTracksEvent } from 'state/analyt
 import { getCurrentUser, getCurrentUserLocale } from 'state/current-user/selectors';
 
 const enhanceContextWithLogin = context => {
-	const { path, params: { flow, twoFactorAuthType, socialService } } = context;
+	const { path, params: { flow, jetpackLogin, socialService, twoFactorAuthType } } = context;
 
 	context.cacheQueryKeys = [ 'client_id' ];
 
@@ -34,6 +34,7 @@ const enhanceContextWithLogin = context => {
 			socialServiceResponse={ context.hash }
 			socialConnect={ flow === 'social-connect' }
 			privateSite={ flow === 'private-site' }
+			jetpack={ jetpackLogin === 'jetpack' }
 		/>
 	);
 };
@@ -132,7 +133,7 @@ export function redirectDefaultLocale( context, next ) {
 		return next();
 	}
 
-	if ( context.pathname === '/log-in/jetpack/en' ) {
+	if ( context.params.jetpackLogin === 'jetpack' ) {
 		context.redirect( '/log-in/jetpack' );
 	} else {
 		context.redirect( '/log-in' );
