@@ -21,7 +21,7 @@ import FormButton from 'components/forms/form-button';
 import SecurePaymentFormPlaceholder from './secure-payment-form-placeholder.jsx';
 import wp from 'lib/wp';
 import config from 'config';
-import ContactDetailsFormFields from 'components/domains/contact-details-form-fields';
+import AsyncLoad from 'components/async-load';
 import ExtraInfoForm, {
 	tldsWithAdditionalDetailsForms,
 } from 'components/domains/registrant-extra-info';
@@ -191,7 +191,8 @@ export class DomainDetailsForm extends PureComponent {
 			),
 		};
 		return (
-			<ContactDetailsFormFields
+			<AsyncLoad
+				require="components/domains/contact-details-form-fields"
 				contactDetails={ contactDetails }
 				needsFax={ this.needsFax() }
 				needsOnlyGoogleAppsDetails={ this.needsOnlyGoogleAppsDetails() }

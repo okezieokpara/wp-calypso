@@ -26,7 +26,7 @@ import { registrar as registrarNames } from 'lib/domains/constants';
 import DesignatedAgentNotice from 'my-sites/domains/domain-management/components/designated-agent-notice';
 import Dialog from 'components/dialog';
 import { getCurrentUser } from 'state/current-user/selectors';
-import ContactDetailsFormFields from 'components/domains/contact-details-form-fields';
+import AsyncLoad from 'components/async-load';
 
 const wpcom = wp.undocumented();
 
@@ -348,7 +348,8 @@ class EditContactInfoFormCard extends React.Component {
 		return (
 			<Card>
 				<form>
-					<ContactDetailsFormFields
+					<AsyncLoad
+						require="components/domains/contact-details-form-fields"
 						eventFormName="Edit Contact Info"
 						contactDetails={ this.contactFormFieldValues }
 						needsFax={ this.needsFax() }
@@ -359,9 +360,8 @@ class EditContactInfoFormCard extends React.Component {
 						labelTexts={ { submitButton: translate( 'Save Contact Info' ) } }
 						onCancel={ this.goToContactsPrivacy }
 						disableSubmitButton={ this.shouldDisableSubmitButton() }
-					>
-						{ canUseDesignatedAgent && this.renderTransferLockOptOut() }
-					</ContactDetailsFormFields>
+						children={ canUseDesignatedAgent && this.renderTransferLockOptOut() }
+					/>
 				</form>
 				{ this.renderDialog() }
 			</Card>
