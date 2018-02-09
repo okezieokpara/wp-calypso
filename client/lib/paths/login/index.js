@@ -9,15 +9,15 @@ import { addLocaleToPath, addLocaleToWpcomUrl } from 'lib/i18n-utils';
 import config, { isEnabled } from 'config';
 
 export function login( {
+	emailAddress,
 	isJetpack,
 	isNative,
 	locale,
-	redirectTo,
-	twoFactorAuthType,
-	socialConnect,
-	emailAddress,
-	socialService,
 	oauth2ClientId,
+	redirectTo,
+	socialConnect,
+	socialService,
+	twoFactorAuthType,
 } = {} ) {
 	let url = config( 'login_url' );
 
