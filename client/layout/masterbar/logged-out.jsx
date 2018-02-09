@@ -7,16 +7,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Masterbar from './masterbar';
+import { connect } from 'react-redux';
 import { getLocaleSlug, localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
  */
-import Item from './item';
 import config from 'config';
-import { login } from 'lib/paths';
-import WordPressWordmark from 'components/wordpress-wordmark';
+import Item from './item';
 import WordPressLogo from 'components/wordpress-logo';
+import WordPressWordmark from 'components/wordpress-wordmark';
+import { getCurrentQueryArguments, getCurrentRoute } from 'state/selectors';
+import { login } from 'lib/paths';
+import { addQueryArgs } from 'lib/route';
 
 function getLoginUrl( redirectUri ) {
 	const params = { locale: getLocaleSlug() };
@@ -30,7 +33,21 @@ function getLoginUrl( redirectUri ) {
 	return login( { ...params, isNative: config.isEnabled( 'login/native-login-links' ) } );
 }
 
-const MasterbarLoggedOut = ( { title, sectionName, translate, redirectUri } ) => (
+function getSignupUrl( currentRoute, query ) {
+	if ( '/log-in/jetpack' === currentRoute ) {
+		return addQueryArgs( query, '/jetpack/connect/authorize' );
+	}
+	return config( 'signup_url' );
+}
+
+const MasterbarLoggedOut = ( {
+	currentRoute,
+	query,
+	title,
+	sectionName,
+	translate,
+	redirectUri,
+} ) => (
 	<Masterbar>
 		<Item className="masterbar__item-logo">
 			<WordPressLogo className="masterbar__wpcom-logo" />
@@ -39,7 +56,7 @@ const MasterbarLoggedOut = ( { title, sectionName, translate, redirectUri } ) =>
 		<Item className="masterbar__item-title">{ title }</Item>
 		<div className="masterbar__login-links">
 			{ 'signup' !== sectionName ? (
-				<Item url={ config( 'signup_url' ) }>
+				<Item url={ getSignupUrl( currentRoute, query ) }>
 					{ translate( 'Sign Up', {
 						context: 'Toolbar',
 						comment: 'Should be shorter than ~12 chars',
@@ -70,4 +87,7 @@ MasterbarLoggedOut.defaultProps = {
 	sectionName: '',
 };
 
-export default localize( MasterbarLoggedOut );
+export default connect( state => ( {
+	currentRoute: getCurrentRoute( state ),
+	query: getCurrentQueryArguments( state ),
+} ) )( localize( MasterbarLoggedOut ) );

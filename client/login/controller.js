@@ -22,19 +22,19 @@ import { recordTracksEventWithClientId as recordTracksEvent } from 'state/analyt
 import { getCurrentUser, getCurrentUserLocale } from 'state/current-user/selectors';
 
 const enhanceContextWithLogin = context => {
-	const { path, params: { flow, jetpackLogin, socialService, twoFactorAuthType } } = context;
+	const { path, params: { flow, isJetpack, socialService, twoFactorAuthType } } = context;
 
 	context.cacheQueryKeys = [ 'client_id' ];
 
 	context.primary = (
 		<WPLogin
+			jetpack={ isJetpack === 'jetpack' }
 			path={ path }
-			twoFactorAuthType={ twoFactorAuthType }
+			privateSite={ flow === 'private-site' }
+			socialConnect={ flow === 'social-connect' }
 			socialService={ socialService }
 			socialServiceResponse={ context.hash }
-			socialConnect={ flow === 'social-connect' }
-			privateSite={ flow === 'private-site' }
-			jetpack={ jetpackLogin === 'jetpack' }
+			twoFactorAuthType={ twoFactorAuthType }
 		/>
 	);
 };
@@ -133,7 +133,7 @@ export function redirectDefaultLocale( context, next ) {
 		return next();
 	}
 
-	if ( context.params.jetpackLogin === 'jetpack' ) {
+	if ( context.params.isJetpack === 'jetpack' ) {
 		context.redirect( '/log-in/jetpack' );
 	} else {
 		context.redirect( '/log-in' );
