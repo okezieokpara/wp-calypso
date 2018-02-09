@@ -32,7 +32,7 @@ export class Login extends React.Component {
 	static propTypes = {
 		clientId: PropTypes.string,
 		isLoggedIn: PropTypes.bool.isRequired,
-		jetpack: PropTypes.bool.isRequired,
+		isJetpack: PropTypes.bool.isRequired,
 		locale: PropTypes.string.isRequired,
 		oauth2Client: PropTypes.object,
 		path: PropTypes.string.isRequired,
@@ -45,7 +45,7 @@ export class Login extends React.Component {
 		twoFactorAuthType: PropTypes.string,
 	};
 
-	static defaultProps = { jetpack: false };
+	static defaultProps = { isJetpack: false };
 
 	componentDidMount() {
 		this.recordPageView( this.props );
@@ -138,7 +138,7 @@ export class Login extends React.Component {
 		const {
 			clientId,
 			isLoggedIn,
-			jetpack,
+			isJetpack,
 			oauth2Client,
 			privateSite,
 			socialConnect,
@@ -154,7 +154,7 @@ export class Login extends React.Component {
 		return (
 			<LoginBlock
 				clientId={ clientId }
-				jetpack={ jetpack }
+				isJetpack={ isJetpack }
 				oauth2Client={ oauth2Client }
 				privateSite={ privateSite }
 				socialConnect={ socialConnect }

@@ -28,7 +28,7 @@ const enhanceContextWithLogin = context => {
 
 	context.primary = (
 		<WPLogin
-			jetpack={ isJetpack === 'jetpack' }
+			isJetpack={ isJetpack === 'jetpack' }
 			path={ path }
 			privateSite={ flow === 'private-site' }
 			socialConnect={ flow === 'social-connect' }
