@@ -11,7 +11,7 @@ import { getLocaleSlug } from 'i18n-calypso';
 /**
  * Internal dependencies
  */
-import { addLocaleToPath, getLanguage } from 'lib/i18n-utils';
+import { addLocaleToPath } from 'lib/i18n-utils';
 import LocaleSuggestionsListItem from './list-item';
 import LocaleSuggestionStore from 'lib/locale-suggestions';
 import Notice from 'components/notice';
@@ -30,19 +30,9 @@ class LocaleSuggestions extends Component {
 	};
 
 	componentWillMount() {
-		let { locale } = this.props;
-
-		if ( ! locale && typeof navigator === 'object' && 'languages' in navigator ) {
-			for ( const langSlug of navigator.languages ) {
-				const language = getLanguage( langSlug.toLowerCase() );
-				if ( language ) {
-					locale = language.langSlug;
-					break;
-				}
-			}
+		if ( this.props.locale ) {
+			this.props.setLocale( this.props.locale );
 		}
-
-		this.props.setLocale( locale );
 	}
 
 	componentDidMount() {
